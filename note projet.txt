@@ -1,0 +1,64 @@
+1/ recuperer les offres PE (dans la candidathèque) :
+
+https://candidatheque.com/api/offres?exists[idPe]=true
+
+Cela renvoie (parmis d'autres infos):
+
+   {
+        "id": 80969,
+        "titre": "Ouvrier / Ouvrière d'entretien des espaces verts",
+        
+        "metier": {
+            "libelle": "Ouvrier / Ouvrière d'entretien des espaces verts"
+        },
+       
+        "ville": {
+            "nom": "Bréban (51320)"
+        },
+        "departement": "/api/departements/52",
+        "region": {
+            "nom": "Grand Est"
+        },
+        "pays": null,
+        
+        "idPe": "172LVFX",
+        "nomEntreprise": "MAIRIE"
+    },
+   
+2/ Requetes veryfie :
+
+Supprimer les offres des entreprises temporaires :
+(Faire une recherche des entreprises de travail temporaire et les exclure de la liste) : 
+
+Code APE des ETT = 7820Z
+activitePrincipaleEtablissement=78.20Z
+L'exclure : !=78.20Z
+Résultat :
+https://veryfie.fr/api/v1/etablissements?activitePrincipaleEtablissement!=78.20Z
+
+Et rechercher par département, par exemple, la somme :
+
+https://veryfie.fr/api/v1/etablissements?activitePrincipaleEtablissement!=78.20Z&codePostalEtablissement=80
+
+Ajout filtres : 
+
+Entreprises encore actives (A sinon F): etatAdministratifEtablissement=A
+
+Et qui emploient (O sinon N): caractereEmployeurEtablissement=O
+
+Cela donne : 
+
+https://veryfie.fr/api/v1/etablissements?activitePrincipaleEtablissement!=78.20Z&codePostalEtablissement=80&etatAdministratifEtablissement=A&caractereEmployeurEtablissement=O
+
+En résumé, J'ai extrait les offres P.E de la candidathèque et relevé les infos utiles pour une recherche plus approfondie dans Veryfie. 
+Ensuite, j'ai exclu les offres venant d'agences d'intérim par le biais de leur code APE qui est 7820Z (= 78.20Z pour le code "activitePrincipaleEtablissement")
+J'ai ensuite ajouté une recherche par département ainsi que d'autres filtres... 
+
+
+
+infos sur le departement
+https://candidatheque.com/api/departements/52
+prop code 
+
+(tuto interressant : https://www.youtube.com/watch?v=Uz7OvmseyF4)
+
