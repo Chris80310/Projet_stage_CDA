@@ -1,0 +1,122 @@
+
+Code pour se connecter à notre websocket de téléphonie : 
+
+
+WebSocketClientConnecte("wbSocketPage",EcouteSocketPage,"92.154.53.181",80,"\WB-WebSocket-Intranet") 
+
+
+________________________________
+
+
+
+PROCÉDURE EcouteSocketPage(ev est un entier, msg est une chaîne)
+
+// ev :
+// SocketErreur
+Une erreur s'est produite durant la communication avec le serveur. Le paramètre <Message> est toujours vide.
+// SocketFermeture
+Le socket est fermé. Le paramètre <Message> contient un code qui indique la raison de la fermeture.
+// SocketMessage
+Le socket a reçu un message. Le paramètre <Message> contient les données relatives au message.
+// SocketOuverture
+Le socket est connecté au serveur. Il est possible d'envoyer des messages.
+
+SELON ev
+CAS SocketOuverture
+// ToastAffiche("connecté au serveur")
+LIB_Message = "Connecté au serveur"
+CAS SocketMessage
+// Info("SocketMessage:" + RC + msg)
+tabListe est un tableau de chaînes
+ChaîneVersTableau(msg,tabListe)
+sligne est une chaîne
+nL est un entier
+nM est un entier = TABLE_Telephones..Occurrence
+l est un entier
+POUR TOUTE LIGNE DE TABLE_Telephones
+l++
+nL = TABLE_Telephones.COL_nLigne
+SI nL>0 ALORS 
+// et nL<nM+1 ALORS
+sligne =tabListe[nL+1]
+// info(nL + " : " + sligne)    
+//  L202304091105430619014630 
+c , cl est une Couleur
+SELON sligne[[1]]
+CAS "L"
+TABLE_Telephones.COL_Etat = "En ligne"
+c = RougeClair
+cl = Noir
+AUTRE CAS
+TABLE_Telephones.COL_Etat = ""
+c = VertClair
+cl = GrisClair
+FIN
+TABLE_Telephones[l].COL_Etat..Couleur
+= c
+TABLE_Telephones[l].COL_Etat_Diode.BTN_Diode..Couleur
+= c
+TABLE_Telephones[l].COL_Date..Couleur
+= cl
+TABLE_Telephones[l].COL_HeureDeb..Couleur
+= cl
+TABLE_Telephones[l].COL_HeureFin..Couleur
+= cl
+TABLE_Telephones[l].COL_Duree..Couleur
+= cl
+TABLE_Telephones[l].COL_Tel..Couleur
+= cl
+TABLE_Telephones[l].COL_Entreprise..Couleur
+= cl
+TABLE_Telephones[l].COL_Contact..Couleur
+= cl
+s est une chaîne
+s = sligne[[3 À 10]]
+SI DateValide(s) ALORS
+s = DateVersChaîne(s,"JJ/MM/AAAA")
+SINON
+s=""
+FIN
+TABLE_Telephones.COL_Date = s
+sHeureDebut,sHeureFin, sDuree sont des chaînes
+QUAND EXCEPTION DANS 
+SI s>"" ALORS
+hD,hF sont des Heures
+s = sligne[[11 À 16]]
+SI Taille(SansEspace(s))=6 ALORS
+hD = s
+sHeureDebut = HeureVersChaîne(s,"HH:MM:SS")
+FIN
+s = sligne[[17 À 22]]
+SI Taille(SansEspace(s))=6 ALORS
+hF = s
+sHeureFin = HeureVersChaîne(s,"HH:MM:SS")
+SI sHeureDebut>"" ALORS
+maDuree est une Durée
+maDuree = hF-hD
+sDuree = DuréeVersChaîne(maDuree,"HH:MM:SS")
+FIN
+FIN
+FIN
+
+TABLE_Telephones.COL_HeureDeb
+= sHeureDebut
+TABLE_Telephones.COL_HeureFin
+= sHeureFin
+TABLE_Telephones.COL_Duree
+= sDuree
+TABLE_Telephones.COL_Tel
+= SansEspace(sligne[[28 À 39]])
+TABLE_Telephones.COL_Entreprise
+= SansEspace(sligne[[40 À 79]])
+TABLE_Telephones.COL_Contact
+= SansEspace(sligne[[80 À 119]])
+FAIRE
+FIN
+FIN
+FIN
+CAS SocketErreur
+LIB_Message = "Erreur serveur"
+CAS SocketFermeture
+LIB_Message = "Déconnecté du serveur"
+FIN
